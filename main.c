@@ -1,4 +1,4 @@
-#include<stdio.h> 
+#include<stdio.h>
 #include<unistd.h>
 #include<stdlib.h>
 #include<sys/wait.h>
@@ -8,6 +8,7 @@
 #include "constants.h"
 #include "parsetools.h"
 
+void syserror(const char *s);
 
 int main(void){
     int pfd[2];
@@ -23,16 +24,16 @@ int main(void){
         // Just for demonstration purposes
         for (int i=0; i < num_words; i++)
             printf("%s\n", line_words[i]);
-    
-    
-    
+
+
+
 
     if ( pipe (pfd) == -1 )
         syserror( "Could not create a pipe" );
     switch ( pid = fork() ) {
-        case -1: 
+        case -1:
             syserror( "First fork failed" );
-        case  0: 
+        case  0:
             if ( close( 0 ) == -1 )
                 syserror( "Could not close stdin" );
             dup(pfd[0]);
@@ -44,9 +45,9 @@ int main(void){
     }
     fprintf(stderr, "The first child's pid is: %d\n", pid);
     switch ( pid = fork() ) {
-        case -1: 
+        case -1:
             syserror( "Second fork failed" );
-        case  0: 
+        case  0:
             if ( close( 1 ) == -1 )
                 syserror( "Could not close stdout" );
             dup(pfd[1]);
@@ -61,7 +62,7 @@ int main(void){
     if (close(pfd[1]) == -1)
         syserror( "Parent could not close stdout" );
     while ( wait(NULL) != -1) ;
-    } 
+    }
 }
 
 void syserror(const char *s)
