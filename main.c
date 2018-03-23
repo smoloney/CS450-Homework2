@@ -147,66 +147,7 @@ void execPipe(int pos, char *lineArray[], int size)
     while ( wait(NULL) != -1) ;
     
 }
-// void stdFunc(char *line_words[], int inPos, int outPos, char *inputFile, char *outputFile)
-// {
-//     // get command before stdin / stdout
-//     char *IN[MAX_LINE_CHARS];
-//     char *OUT[MAX_LINE_CHARS];
-    
-//     // if input redirection is used
-//     if (inFlag == true)
-//     {
-//         IN[inPos] = (char*)NULL;
-    
-//         for(int i = 0; i < inPos; i++)
-//             IN[i] = line_words[i];
-    
-//         int log = open(inputFile, O_RDONLY, 0777);
-//         dup2(log, 0);
-//         if (close(log) == -1)
-//             printf("Could not close log");
-//     }
-    
-//     // if output redirection is used
-//     if (outFlag == true)
-//     {
-//         OUT[outPos] = (char*)NULL;
-        
-//         for(int i = 0; i < outPos; i++)
-//             OUT[i] = line_words[i];
-        
-//         int log2 = open(outputFile, O_WRONLY | O_TRUNC, 0777);
-//         dup2(log2, 1);
-//         if (close(log2) == -1)
-//             printf("Could not close log2");
-//     }
-    
-//     /*
-//     // if only stdin is used
-//     if (inFlag == true && outFlag == false)
-//     {
-//         execvp(IN[0], IN);
-//         printf("Exec error");
-//     } */
-    
-//     // if only stdout is used
-//     if (outFlag == true && inFlag == false)
-//     {
-//         outFlag = nil;
-//         inFlag = nil;
-//         execvp(OUT[0], OUT);
-//         printf("Exec error");
-//     }
-//     // both stdin and stdout are used
-//     else
-//     {
-//         outFlag = nil;
-//         inFlag = nil;
-//         execvp(IN[0], IN);
-//         printf("Exec error");
-//     }
-        
-// }
+// 
 
 
 
