@@ -74,13 +74,14 @@ int main(void)
         {
             if (numPipes == 1)
             {
+                printf("Hit here");
                 execPipe(pipePosition[0], line_words, num_words);
             }
         }
-        else if ((input || output) && numPipes == 0)
-        {
-            execRedirect(line_words, inFile, outFile, inPosition, outPosition);
-        }
+        // else if ((input || output) && numPipes == 0)
+        // {
+        //     execRedirect(line_words, inFile, outFile, inPosition, outPosition);
+        // }
 
         else
         {
@@ -91,19 +92,22 @@ int main(void)
 
 void execPipe(int pos, char *lineArray[], int size)
 {
-    int secondHalfSize = (size - 1) - (pos);
-    char *firstHalf[pos - 1];
-    char *secondHalf[size - (pos + 1)];
+    int secondHalfSize = (size - 1) - pos;
+    char *firstHalf[pos];
+    // char *secondHalf[size - (pos + 1)];
+    char *secondHalf[secondHalfSize];
 
     int pfd[2];
     pid_t pid;
 
-    // firstHalf= (char*)NULL;
+     firstHalf[pos] = (char*)NULL;
+     secondHalf[secondHalfSize] = (char*)NULL;
+
     for (int i = 0; i < pos; i++)
     {
         firstHalf[i] = lineArray[i];
     }
-    for (int j = pos + 1; j < secondHalfSize; j++)
+    for (int j = pos + 1; j < size; j++)
     {
         secondHalf[j] = lineArray[j];
     }
@@ -123,7 +127,7 @@ void execPipe(int pos, char *lineArray[], int size)
         execvp(secondHalf[0], secondHalf);
         syserror("Could not exec " + *secondHalf[0]);
     }
-    fprintf(stderr, "The first child's pid is: %d\n", pid);
+    //fprintf(stderr, "The first child's pid is: %d\n", pid);
     switch (pid = fork())
     {
     case -1:
@@ -137,57 +141,57 @@ void execPipe(int pos, char *lineArray[], int size)
         execvp(firstHalf[0], firstHalf);
         syserror("Could not exec " + *firstHalf[0]);
     }
-    fprintf(stderr, "The second child's pid is: %d\n", pid);
+    // fprintf(stderr, "The second child's pid is: %d\n", pid);
     if (close(pfd[0]) == -1)
         syserror("Parent could not close stdin");
     if (close(pfd[1]) == -1)
         syserror("Parent could not close stdout");
-    while (wait(NULL) != -1)
-        ;
+    while (wait(NULL) != -1);
 }
 
-void execRedirect(char *lineArray[], char *inFile, char *outFile, int inPosition, int outPosition){
-    char *in[MAX_LINE_CHARS];
-    char *out[MAX_LINE_CHARS];
 
-    if(input){
-        in[inPosition] = (char*)NULL;
-        for(int i = 0; i < inPosition; i++){
-            in[i] = lineArray[i];
-        }
-        int openInFile = open(inFile, O_RDONLY, 0777);
-        dup2(openInFile, 0);
-        if(close(openInFile) == -1){
-            syserror("Could not close openfile");
-        }
+// void execRedirect(char *lineArray[], char *inFile, char *outFile, int inPosition, int outPosition){
+//     char *in[MAX_LINE_CHARS];
+//     char *out[MAX_LINE_CHARS];
 
-        if(outFile){
-            in[outPosition] = (char*)NULL;
-            for(int i = 0; i < outPosition; i++){
-                out[i] = lineArray[i];
-            }
-            int openOutFile = open(outFile, O_WRONLY | O_TRUNC, 0777);
-            dup2(openOutFile, 1);
-            if(close(openOutFile) == -1){
-                syserror("Could not close Output File");
-            }
-        }
+//     if(input){
+//         in[inPosition] = (char*)NULL;
+//         for(int i = 0; i < inPosition; i++){
+//             in[i] = lineArray[i];
+//         }
+//         int openInFile = open(inFile, O_RDONLY, 0777);
+//         dup2(openInFile, 0);
+//         if(close(openInFile) == -1){
+//             syserror("Could not close openfile");
+//         }
 
-        if(input && !output){
-            execvp(in[0], in);
-            syserror("Error with input redirection");
+//         if(outFile){
+//             in[outPosition] = (char*)NULL;
+//             for(int i = 0; i < outPosition; i++){
+//                 out[i] = lineArray[i];
+//             }
+//             int openOutFile = open(outFile, O_CREAT|O_WRONLY | O_TRUNC, 0777);
+//             dup2(openOutFile, 1);
+//             if(close(openOutFile) == -1){
+//                 syserror("Could not close Output File");
+//             }
+//         }
 
-        }
+//         if(input && !output){
+//             execvp(in[0], in);
+//             syserror("Error with input redirection");
 
-        else{
-            execvp(out[0], out);
-            syserror("Error with output redirection");
-        }
-        input = NULL;
-        output = NULL;
+//         }
 
-    }
-}
+//         else{
+//             execvp(out[0], out);
+//             syserror("Error with output redirection");
+//         }
+//         input = NULL;
+//         output = NULL;
+
+//     }
+// }
 
 void syserror(const char *s)
 {
