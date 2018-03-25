@@ -15,14 +15,11 @@
 #define ERROR -1
 
 void syserror(const char *s);
-
 void createInput(char *inputFile);
 void createOutput(char *outputfile);
 
 void runCommand(char **execArray, int size);
 int input, output;
-
-char *inFile, *outFile;
 
 int main(void)
 {
@@ -37,19 +34,19 @@ int main(void)
         int num_words = split_cmd_line(line, line_words);
         int stdin = dup(STDINPUT);
         int stdout = dup(STDOUTPUT);
-        int cmd = 0;
+        int idx = 0;
         input = 0;
         output = 1;
 
 
-        char* command[num_words];
+        char* inputCommand[num_words];
 
         if(stdin == ERROR || stdout == ERROR){
             syserror("Could not copy stdin or stdout.");
         }
         for (int i = 0; i < num_words; i++)
         {
-            if ((strcmp(line_words[i], "<"))== 0){
+            if ((strcmp(line_words[i], "<")) == 0){
             
                 createInput(line_words[i+1]);
                 i++;
@@ -60,7 +57,7 @@ int main(void)
                 createOutput(line_words[i + 1]);
                 i++;
             }
-            else if ((strcmp(line_words[i], "|"))== 0)
+            else if ((strcmp(line_words[i], "|")) == 0)
             {
                 int pfd[2];
                 if(pipe(pfd) == ERROR){
@@ -68,8 +65,8 @@ int main(void)
                 }
                 output = pfd[1];
 
-                runCommand(command, cmd);
-                cmd = 0;
+                runCommand(inputCommand, idx);
+                idx = 0;
                 if(close(pfd[1])== -1  ){
                     syserror("Could not close pfd\n");
 
@@ -80,11 +77,11 @@ int main(void)
                 input = pfd[0];
             }
             else{
-                command[cmd++] = line_words[i];
+                inputCommand[idx++] = line_words[i];
             }
             
         }
-        runCommand(command, cmd);
+        runCommand(inputCommand, idx);
         if(input != 0){
             dup2(stdin, STDINPUT);
         }
