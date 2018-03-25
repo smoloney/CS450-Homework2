@@ -83,7 +83,7 @@ int main(void)
                     syserror("Could not create pipe\n");
                 }
                 output = pfd[1];
-                execCommand(command, cmd);
+                runCommand(command, cmd);
                 cmd = 0;
                 if(close(pfd[1])== -1  ){
                     syserror("Could not close pfd\n");
